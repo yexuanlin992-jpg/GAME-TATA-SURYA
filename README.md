@@ -1,1 +1,1864 @@
 # GAME-TATA-SURYA
+[file name]: ORBIT TATA SURYA.html
+[file content begin]
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Tata Surya - Tempatkan Planet di Orbit yang Tepat</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0b0b2d, #1a1a4a);
+            color: #fff;
+            padding: 20px;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 10px rgba(0, 242, 254, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #a0a0e0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(79, 172, 254, 0.3);
+            transform: translateY(-3px);
+        }
+        
+        .filter-btn.active {
+            background: rgba(79, 172, 254, 0.5);
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+        }
+        
+        .filter-btn.favorites-active {
+            background: rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
+        }
+        
+        .filter-btn.game-active {
+            background: rgba(156, 39, 176, 0.3);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.5);
+        }
+        
+        .search-box {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        
+        .search-box input {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .search-box input::placeholder {
+            color: #a0a0e0;
+        }
+        
+        .search-box input:focus {
+            box-shadow: 0 0 15px rgba(79, 172, 254, 0.5);
+        }
+        
+        .planets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .planet-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .planet-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .planet-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .planet-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.08);
+        }
+        
+        .planet-shape {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.5s ease;
+        }
+        
+        .planet-card:hover .planet-shape {
+            transform: rotate(15deg) scale(1.1);
+        }
+        
+        .planet-name {
+            font-size: 1.5rem;
+            margin: 10px 0;
+            color: #fff;
+        }
+        
+        .planet-desc {
+            font-size: 0.9rem;
+            color: #c0c0f0;
+            margin-bottom: 10px;
+        }
+        
+        .planet-details {
+            text-align: left;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: #a0a0e0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+        
+        .planet-card.active .planet-details {
+            max-height: 200px;
+        }
+        
+        .planet-details p {
+            margin: 5px 0;
+        }
+        
+        .planet-facts {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: #c0c0f0;
+            display: none;
+        }
+        
+        .planet-card.active .planet-facts {
+            display: block;
+        }
+        
+        .comparison-section {
+            margin: 40px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+        }
+        
+        .comparison-title {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #4facfe;
+        }
+        
+        .comparison-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            height: 200px;
+            margin-top: 20px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        
+        .comparison-bar {
+            width: 40px;
+            min-width: 40px;
+            background: linear-gradient(to top, #4facfe, #00f2fe);
+            border-radius: 5px 5px 0 0;
+            position: relative;
+            transition: height 1s ease;
+            margin: 0 10px;
+        }
+        
+        .comparison-bar-label {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #a0a0e0;
+            white-space: nowrap;
+        }
+        
+        .comparison-bar-value {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            color: #fff;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #a0a0e0;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a4a, #0b0b2d);
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.5);
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            background: none;
+            border: none;
+            z-index: 1001;
+        }
+        
+        .close-modal:hover {
+            color: #4facfe;
+        }
+        
+        .modal-planet-name {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #4facfe;
+            text-align: center;
+        }
+        
+        .modal-planet-image {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(79, 172, 254, 0.5);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .modal-planet-details {
+            margin-top: 20px;
+        }
+        
+        .modal-planet-details p {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .planets-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .filter-btn {
+                width: 200px;
+                justify-content: center;
+            }
+            
+            .comparison-chart {
+                justify-content: flex-start;
+                padding: 0 10px;
+            }
+        }
+        
+        .planet-stats {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4facfe;
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: #a0a0e0;
+        }
+        
+        .toggle-details {
+            background: none;
+            border: none;
+            color: #4facfe;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .favorite-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #a0a0e0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+            z-index: 10;
+        }
+        
+        .favorite-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .favorite-btn.active {
+            color: #ffd700;
+        }
+        
+        .favorites-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            display: none;
+        }
+        
+        .favorites-section.active {
+            display: block;
+        }
+        
+        .favorites-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .favorites-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        
+        .favorite-item {
+            background: rgba(255, 215, 0, 0.1);
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .favorite-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(255, 215, 0, 0.9);
+            color: #1a1a4a;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transform: translateX(150%);
+            transition: transform 0.5s ease;
+            z-index: 1001;
+            font-weight: bold;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* STYLE PLANET REALISTIS */
+        .realistic-planet {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Merkurius - Abu-abu dengan banyak kawah */
+        .mercury-realistic {
+            background: 
+                radial-gradient(circle at 30% 30%, #8c8c8c, #5a5a5a 60%, #3a3a3a),
+                radial-gradient(circle at 70% 20%, #a8a8a8, transparent 20%),
+                radial-gradient(circle at 20% 70%, #969696, transparent 15%),
+                radial-gradient(circle at 60% 80%, #7a7a7a, transparent 12%);
+            box-shadow: 
+                inset -15px -15px 30px rgba(0,0,0,0.6),
+                inset 10px 10px 20px rgba(255,255,255,0.1);
+        }
+
+        /* Venus - Kuning dengan atmosfer berawan tebal */
+        .venus-realistic {
+            background: 
+                radial-gradient(circle at 40% 40%, #e6b87e, #b5651d 50%, #8b4513),
+                radial-gradient(circle at 60% 30%, rgba(255,255,255,0.3) 10%, transparent 20%),
+                radial-gradient(circle at 30% 60%, rgba(255,255,255,0.2) 15%, transparent 25%),
+                linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 40%, rgba(255,255,255,0.1) 60%, transparent 60%);
+            box-shadow: 
+                inset -12px -12px 25px rgba(0,0,0,0.5),
+                inset 8px 8px 15px rgba(255,255,255,0.1);
+        }
+
+        /* Bumi - Biru dengan lebih banyak daratan hijau dan awan */
+        .earth-realistic {
+            background: 
+                /* Dasar biru lautan */
+                radial-gradient(circle at 30% 40%, #2e5aa7, #1e3f8f 40%, #0f2a5a),
+                /* Benua hijau besar - Amerika Utara & Selatan */
+                radial-gradient(circle at 25% 50%, #228b22 12%, #006400 18%, transparent 22%),
+                /* Benua hijau - Eropa & Asia */
+                radial-gradient(circle at 65% 35%, #32cd32 10%, #228b22 15%, transparent 20%),
+                /* Benua hijau - Afrika */
+                radial-gradient(circle at 45% 65%, #3cb371 8%, #2e8b57 12%, transparent 16%),
+                /* Benua hijau - Australia */
+                radial-gradient(circle at 80% 75%, #90ee90 6%, #7cfc00 10%, transparent 13%),
+                /* Daratan coklat/gunung */
+                radial-gradient(circle at 55% 45%, #daa520 5%, #b8860b 8%, transparent 11%),
+                /* Awan putih */
+                radial-gradient(circle at 70% 55%, rgba(255,255,255,0.9) 4%, rgba(255,255,255,0.6) 7%, transparent 10%),
+                radial-gradient(circle at 35% 30%, rgba(255,255,255,0.8) 3%, rgba(255,255,255,0.4) 6%, transparent 9%),
+                radial-gradient(circle at 50% 70%, rgba(255,255,255,0.7) 5%, rgba(255,255,255,0.3) 8%, transparent 11%);
+            box-shadow: 
+                inset -10px -10px 20px rgba(0,0,0,0.4),
+                inset 6px 6px 12px rgba(255,255,255,0.2);
+        }
+
+        /* Mars - Merah dengan fitur permukaan gelap */
+        .mars-realistic {
+            background: 
+                radial-gradient(circle at 40% 40%, #c1440e, #8b2c0c 50%, #5a1a06),
+                radial-gradient(circle at 70% 30%, #8b0000 15%, transparent 20%),
+                radial-gradient(circle at 30% 70%, #a52a2a 12%, transparent 18%),
+                radial-gradient(circle at 60% 60%, #5a1a06 10%, transparent 15%);
+            box-shadow: 
+                inset -12px -12px 25px rgba(0,0,0,0.5),
+                inset 8px 8px 15px rgba(255,100,100,0.1);
+        }
+
+        /* Jupiter - Strip coklat dengan Bintik Merah Besar */
+        .jupiter-realistic {
+            background: 
+                radial-gradient(circle at 30% 30%, #d8ca9d, #a8996e 40%, #8b7846),
+                linear-gradient(45deg, 
+                    transparent 25%, 
+                    #8b4513 25%, 
+                    #8b4513 35%,
+                    transparent 35%,
+                    transparent 55%,
+                    #a0522d 55%,
+                    #a0522d 65%,
+                    transparent 65%),
+                radial-gradient(circle at 70% 40%, #8b0000 8%, #b22222 12%, transparent 15%);
+            box-shadow: 
+                inset -20px -20px 40px rgba(0,0,0,0.6),
+                inset 15px 15px 25px rgba(255,255,255,0.1);
+        }
+
+        /* Saturnus - Kuning dengan cincin detail */
+        .saturn-realistic {
+            background: radial-gradient(circle at 40% 40%, #e4d19a, #b8a46d 50%, #9c8c5e);
+            box-shadow: 
+                inset -15px -15px 30px rgba(0,0,0,0.5),
+                inset 10px 10px 20px rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .saturn-rings-realistic {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(20deg);
+            width: 200%;
+            height: 25%;
+            background: 
+                linear-gradient(90deg, 
+                    transparent 5%,
+                    rgba(210, 180, 140, 0.9) 5%,
+                    rgba(210, 180, 140, 0.9) 15%,
+                    rgba(184, 134, 11, 0.8) 15%,
+                    rgba(184, 134, 11, 0.8) 25%,
+                    rgba(139, 69, 19, 0.7) 25%,
+                    rgba(139, 69, 19, 0.7) 75%,
+                    rgba(184, 134, 11, 0.8) 75%,
+                    rgba(184, 134, 11, 0.8) 85%,
+                    rgba(210, 180, 140, 0.9) 85%,
+                    rgba(210, 180, 140, 0.9) 95%,
+                    transparent 95%);
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        /* Uranus - Biru-hijau dengan pola awan */
+        .uranus-realistic {
+            background: 
+                radial-gradient(circle at 30% 30%, #a6d1e6, #7db9d9 40%, #5a9bc2),
+                radial-gradient(circle at 60% 40%, rgba(255,255,255,0.3) 8%, transparent 12%),
+                radial-gradient(circle at 40% 60%, rgba(255,255,255,0.2) 6%, transparent 10%),
+                linear-gradient(30deg, transparent 45%, rgba(255,255,255,0.1) 45%, rgba(255,255,255,0.1) 55%, transparent 55%);
+            box-shadow: 
+                inset -10px -10px 20px rgba(0,0,0,0.4),
+                inset 6px 6px 12px rgba(255,255,255,0.1);
+        }
+
+        /* Neptunus - Biru tua dengan badai besar */
+        .neptune-realistic {
+            background: 
+                radial-gradient(circle at 40% 40%, #5b6dcd, #3a4ca8 50%, #2a3b8c),
+                radial-gradient(circle at 70% 30%, #4169e1 10%, transparent 15%),
+                radial-gradient(circle at 30% 70%, #483d8b 8%, transparent 12%),
+                radial-gradient(circle at 60% 60%, rgba(255,255,255,0.2) 5%, transparent 8%);
+            box-shadow: 
+                inset -12px -12px 25px rgba(0,0,0,0.5),
+                inset 8px 8px 15px rgba(255,255,255,0.1);
+        }
+
+        .game-section {
+            margin: 40px 0;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .game-title {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #4facfe;
+        }
+
+        .game-description {
+            color: #a0a0e0;
+            margin-bottom: 25px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .game-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border: none;
+            color: #0b0b2d;
+            padding: 12px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .game-btn:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: #a0a0e0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .game-board {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            height: 650px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .solar-system {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 95%;
+            height: 95%;
+        }
+
+        .sun {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #ffd700, #ff8c00, #ff4500);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #ff8c00;
+            z-index: 1;
+        }
+
+        .orbit-container {
+            position: absolute;
+            top: 120px;
+            left: 0;
+            width: 100%;
+            height: 540px;
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .orbit {
+            position: relative;
+            width: 100%;
+            height: 45px;
+            border: 2px dashed rgba(255, 255, 255, 0.4);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+
+        .orbit-number {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .planet-slot {
+            position: absolute;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 2;
+            left: 50%;
+            transform: translateX(-50%);
+            cursor: pointer;
+        }
+
+        .planet-slot:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .planet-slot.correct {
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.15);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .planet-slot.incorrect {
+            border-color: #ff0000;
+            background: rgba(255, 0, 0, 0.15);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+        }
+
+        .planet-selection {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            padding: 20px;
+            width: 100%;
+            max-width: 900px;
+            justify-items: center;
+        }
+
+        .planet-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .selectable-planet {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .selectable-planet:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.7);
+        }
+
+        .selectable-planet.selected {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(79, 172, 254, 0.8);
+            border: 3px solid #4facfe;
+        }
+
+        .selectable-planet.placed {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: scale(0.9);
+        }
+
+        .planet-name-tag {
+            font-size: 0.75rem;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 4px 8px;
+            border-radius: 8px;
+            white-space: nowrap;
+            font-weight: bold;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            min-width: 70px;
+            margin-top: 8px;
+        }
+
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game-stat {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 120px;
+        }
+
+        .game-stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4facfe;
+        }
+
+        .game-stat-label {
+            font-size: 0.9rem;
+            color: #a0a0e0;
+        }
+
+        .game-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .game-message.success {
+            background: rgba(0, 255, 0, 0.2);
+            color: #00ff00;
+            display: block;
+        }
+
+        .game-message.error {
+            background: rgba(255, 0, 0, 0.2);
+            color: #ff0000;
+            display: block;
+        }
+
+        .final-score {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #4facfe;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .game-hint {
+            color: #a0a0e0;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+
+        .instructions {
+            color: #a0a0e0;
+            font-size: 1rem;
+            margin: 15px 0;
+            text-align: center;
+            max-width: 800px;
+        }
+
+        @media (max-width: 768px) {
+            .game-board {
+                height: 600px;
+                max-width: 95%;
+            }
+            
+            .planet-selection {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            
+            .orbit-container {
+                gap: 26px;
+                height: 480px;
+            }
+            
+            .planet-slot, .selectable-planet {
+                width: 45px;
+                height: 45px;
+            }
+            
+            .selectable-planet {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .planet-name-tag {
+                font-size: 0.7rem;
+                padding: 3px 6px;
+                min-width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-globe-americas"></i> Planet-Planet Tata Surya</h1>
+            <p class="subtitle">Jelajahi informasi menarik tentang planet-planet dalam sistem tata surya kita dengan fitur interaktif yang menarik.</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Cari planet...">
+            </div>
+            
+            <div class="controls">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-globe"></i> Semua Planet
+                </button>
+                <button class="filter-btn" data-filter="rocky">
+                    <i class="fas fa-mountain"></i> Planet Batuan
+                </button>
+                <button class="filter-btn" data-filter="gas">
+                    <i class="fas fa-wind"></i> Planet Gas
+                </button>
+                <button class="filter-btn" data-filter="ice">
+                    <i class="fas fa-snowflake"></i> Planet Es
+                </button>
+                <button class="filter-btn" id="showFavorites">
+                    <i class="fas fa-star"></i> Favorit Saya
+                </button>
+                <button class="filter-btn" id="showGame">
+                    <i class="fas fa-gamepad"></i> Permainan
+                </button>
+            </div>
+        </header>
+        
+        <div class="favorites-section" id="favoritesSection">
+            <h3 class="favorites-title"><i class="fas fa-star"></i> Planet Favorit Anda</h3>
+            <div class="favorites-list" id="favoritesList">
+                <!-- Daftar favorit akan ditampilkan di sini -->
+            </div>
+        </div>
+        
+        <div class="planets-grid" id="planetsGrid">
+            <!-- Planet cards akan diisi oleh JavaScript -->
+        </div>
+        
+        <!-- Section Permainan -->
+        <div class="game-section" id="gameSection" style="display: none;">
+            <h3 class="game-title"><i class="fas fa-gamepad"></i> Permainan Tata Surya</h3>
+            <p class="game-description">
+                Pilih planet dan klik pada orbit untuk menempatkannya! Tempatkan setiap planet pada orbit yang benar berdasarkan urutannya dari Matahari.
+            </p>
+            
+            <div class="instructions">
+                <strong>Cara Bermain:</strong> Klik pada planet di bawah, lalu klik pada orbit yang sesuai untuk menempatkannya.
+            </div>
+            
+            <div class="game-container">
+                <div class="game-controls">
+                    <button class="game-btn" id="startGame">
+                        <i class="fas fa-play"></i> Mulai Permainan
+                    </button>
+                    <button class="game-btn" id="resetGame" disabled>
+                        <i class="fas fa-redo"></i> Ulangi
+                    </button>
+                    <button class="game-btn" id="showHint">
+                        <i class="fas fa-lightbulb"></i> Petunjuk
+                    </button>
+                </div>
+                
+                <div class="game-stats">
+                    <div class="game-stat">
+                        <div class="game-stat-value" id="score">0</div>
+                        <div class="game-stat-label">Skor</div>
+                    </div>
+                    <div class="game-stat">
+                        <div class="game-stat-value" id="timer">60</div>
+                        <div class="game-stat-label">Detik</div>
+                    </div>
+                    <div class="game-stat">
+                        <div class="game-stat-value" id="correctMatches">0/8</div>
+                        <div class="game-stat-label">Planet Benar</div>
+                    </div>
+                </div>
+                
+                <div class="game-message" id="gameMessage"></div>
+                
+                <div class="game-board" id="gameBoard">
+                    <div class="solar-system" id="solarSystem">
+                        <!-- Tata surya akan diisi oleh JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Planet di luar kotak game -->
+                <div class="planet-selection" id="planetSelection">
+                    <!-- Planet yang bisa dipilih akan diisi oleh JavaScript -->
+                </div>
+                
+                <p class="game-hint" id="gameHint">
+                    Tips: Planet terdekat dengan Matahari adalah Merkurius, dan terjauh adalah Neptunus
+                </p>
+            </div>
+        </div>
+        
+        <div class="comparison-section" id="comparisonSection">
+            <h3 class="comparison-title"><i class="fas fa-chart-bar"></i> Perbandingan Ukuran Planet (dalam ribuan km)</h3>
+            <div class="comparison-chart" id="comparisonChart">
+                <!-- Chart akan diisi oleh JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>oleh Karina & Intan dari SMA NEGERI KABUH 2025</p>
+        </div>
+    </div>
+    
+    <!-- Modal untuk detail planet -->
+    <div class="modal" id="planetModal">
+        <div class="modal-content">
+            <button class="close-modal" id="closeModal">&times;</button>
+            <h2 class="modal-planet-name" id="modalPlanetName">Nama Planet</h2>
+            <div class="modal-planet-image" id="modalPlanetImage"></div>
+            <div class="modal-planet-details" id="modalPlanetDetails">
+                <!-- Detail planet akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifikasi -->
+    <div class="notification" id="notification">
+        Planet telah ditambahkan ke favorit!
+    </div>
+
+    <script>
+        // Data planet yang lengkap dengan gambar dan ikon - HANYA 8 PLANET
+        const planets = [
+            {
+                id: 1,
+                name: "Merkurius",
+                type: "rocky",
+                description: "Planet terkecil dan terdekat dengan Matahari",
+                diameter: 4879,
+                mass: "3,3 × 10²³ kg",
+                distance: "57,9 juta km",
+                class: "mercury-realistic",
+                facts: "Merkurius tidak memiliki satelit alami dan atmosfer yang signifikan. Satu hari di Merkurius (dari matahari terbit hingga terbit berikutnya) memakan waktu sekitar 176 hari Bumi.",
+                orbitalPeriod: "88 hari",
+                rotationPeriod: "59 hari",
+                temperature: "-173°C hingga 427°C",
+                moons: 0,
+                discovery: "Dikenal sejak zaman kuno",
+                order: 1
+            },
+            {
+                id: 2,
+                name: "Venus",
+                type: "rocky",
+                description: "Planet terpanas dengan atmosfer tebal",
+                diameter: 12104,
+                mass: "4,87 × 10²⁴ kg",
+                distance: "108,2 juta km",
+                class: "venus-realistic",
+                facts: "Venus berotasi dari timur ke barat, berlawanan dengan sebagian besar planet. Atmosfernya yang tebal terdiri terutama dari karbon dioksida, menciptakan efek rumah kaca yang ekstrem.",
+                orbitalPeriod: "225 hari",
+                rotationPeriod: "243 hari",
+                temperature: "462°C",
+                moons: 0,
+                discovery: "Dikenal sejak zaman kuno",
+                order: 2
+            },
+            {
+                id: 3,
+                name: "Bumi",
+                type: "rocky",
+                description: "Planet biru dengan kehidupan",
+                diameter: 12742,
+                mass: "5,97 × 10²⁴ kg",
+                distance: "149,6 juta km",
+                class: "earth-realistic",
+                facts: "Bumi adalah satu-satunya planet yang diketahui memiliki kehidupan. 71% permukaannya ditutupi air, dan memiliki satu satelit alami, Bulan.",
+                orbitalPeriod: "365,25 hari",
+                rotationPeriod: "24 jam",
+                temperature: "-88°C hingga 58°C",
+                moons: 1,
+                discovery: "-",
+                order: 3
+            },
+            {
+                id: 4,
+                name: "Mars",
+                type: "rocky",
+                description: "Planet merah dengan gunung tertinggi",
+                diameter: 6779,
+                mass: "6,42 × 10²³ kg",
+                distance: "227,9 juta km",
+                class: "mars-realistic",
+                facts: "Mars memiliki gunung tertinggi di tata surya, Olympus Mons, dengan tinggi sekitar 21 km. Planet ini juga memiliki dua satelit alami, Phobos dan Deimos.",
+                orbitalPeriod: "687 hari",
+                rotationPeriod: "24,6 jam",
+                temperature: "-87°C hingga -5°C",
+                moons: 2,
+                discovery: "Dikenal sejak zaman kuno",
+                order: 4
+            },
+            {
+                id: 5,
+                name: "Jupiter",
+                type: "gas",
+                description: "Planet terbesar dengan Bintik Merah Besar",
+                diameter: 139820,
+                mass: "1,90 × 10²⁷ kg",
+                distance: "778,5 juta km",
+                class: "jupiter-realistic",
+                facts: "Jupiter adalah planet terbesar di tata surya kita. Bintik Merah Besarnya adalah badai raksasa yang telah berlangsung setidaknya 400 tahun. Jupiter memiliki 79 satelit yang diketahui.",
+                orbitalPeriod: "12 tahun",
+                rotationPeriod: "9,9 jam",
+                temperature: "-108°C",
+                moons: 79,
+                discovery: "Dikenal sejak zaman kuno",
+                order: 5
+            },
+            {
+                id: 6,
+                name: "Saturnus",
+                type: "gas",
+                description: "Planet dengan cincin yang menakjubkan",
+                diameter: 116460,
+                mass: "5,68 × 10²⁶ kg",
+                distance: "1,43 miliar km",
+                class: "saturn-realistic",
+                facts: "Cincin Saturnus sebagian besar terbuat dari potongan es dan batu. Planet ini adalah yang paling tidak padat di tata surya - akan mengapung jika ditempatkan di air yang cukup besar.",
+                orbitalPeriod: "29 tahun",
+                rotationPeriod: "10,7 jam",
+                temperature: "-138°C",
+                moons: 82,
+                discovery: "Dikenal sejak zaman kuno",
+                order: 6
+            },
+            {
+                id: 7,
+                name: "Uranus",
+                type: "ice",
+                description: "Planet es dengan sumbu rotasi miring",
+                diameter: 50724,
+                mass: "8,68 × 10²⁵ kg",
+                distance: "2,87 miliar km",
+                class: "uranus-realistic",
+                facts: "Uranus memiliki sumbu rotasi yang sangat miring, sehingga tampak 'berbaring' saat mengorbit Matahari. Planet ini ditemukan pada tahun 1781 oleh William Herschel.",
+                orbitalPeriod: "84 tahun",
+                rotationPeriod: "17,2 jam",
+                temperature: "-195°C",
+                moons: 27,
+                discovery: "1781 oleh William Herschel",
+                order: 7
+            },
+            {
+                id: 8,
+                name: "Neptunus",
+                type: "ice",
+                description: "Planet biru dengan angin terkuat",
+                diameter: 49244,
+                mass: "1,02 × 10²⁶ kg",
+                distance: "4,5 miliar km",
+                class: "neptune-realistic",
+                facts: "Neptunus memiliki angin terkuat di tata surya, dengan kecepatan mencapai 2.100 km/jam. Planet ini ditemukan melalui perhitungan matematika sebelum diamati secara langsung.",
+                orbitalPeriod: "165 tahun",
+                rotationPeriod: "16,1 jam",
+                temperature: "-201°C",
+                moons: 14,
+                discovery: "1846 oleh Johann Galle",
+                order: 8
+            }
+        ];
+
+        // Variabel global
+        let favorites = JSON.parse(localStorage.getItem('planetFavorites')) || [];
+        let currentFilter = 'all';
+        let currentSearch = '';
+        let isShowingFavorites = false;
+        let isShowingGame = false;
+
+        // Variabel permainan
+        let gameScore = 0;
+        let gameTime = 60;
+        let correctMatches = 0;
+        let gameTimer;
+        let isGameActive = false;
+        let selectedPlanet = null;
+        let placedPlanets = [];
+
+        // Inisialisasi halaman
+        document.addEventListener('DOMContentLoaded', function() {
+            renderPlanets();
+            setupEventListeners();
+            renderComparisonChart();
+            updateFavoritesSection();
+        });
+
+        // Render daftar planet
+        function renderPlanets() {
+            const planetsGrid = document.getElementById('planetsGrid');
+            const gameSection = document.getElementById('gameSection');
+            const comparisonSection = document.getElementById('comparisonSection');
+            
+            // Sembunyikan/tampilkan section berdasarkan mode
+            if (isShowingGame) {
+                planetsGrid.style.display = 'none';
+                comparisonSection.style.display = 'none';
+                gameSection.style.display = 'block';
+                return;
+            } else {
+                planetsGrid.style.display = 'grid';
+                comparisonSection.style.display = 'block';
+                gameSection.style.display = 'none';
+            }
+            
+            let filteredPlanets;
+            
+            if (isShowingFavorites) {
+                // Jika sedang menampilkan favorit, filter berdasarkan daftar favorit
+                filteredPlanets = planets.filter(planet => 
+                    favorites.includes(planet.id) && 
+                    (planet.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                     planet.description.toLowerCase().includes(currentSearch.toLowerCase()))
+                );
+            } else {
+                // Filter normal berdasarkan jenis dan pencarian
+                filteredPlanets = planets.filter(planet => {
+                    const matchesFilter = currentFilter === 'all' || planet.type === currentFilter;
+                    const matchesSearch = planet.name.toLowerCase().includes(currentSearch.toLowerCase()) || 
+                                         planet.description.toLowerCase().includes(currentSearch.toLowerCase());
+                    return matchesFilter && matchesSearch;
+                });
+            }
+            
+            if (filteredPlanets.length === 0) {
+                planetsGrid.innerHTML = '<div class="loading" style="text-align:center; padding:40px; color:#a0a0e0;">' + 
+                    (isShowingFavorites ? 'Tidak ada planet favorit yang sesuai dengan pencarian Anda.' : 'Tidak ada planet yang sesuai dengan pencarian Anda.') + 
+                    '</div>';
+                return;
+            }
+            
+            planetsGrid.innerHTML = filteredPlanets.map(planet => `
+                <div class="planet-card" data-planet-id="${planet.id}">
+                    <button class="favorite-btn ${favorites.includes(planet.id) ? 'active' : ''}" data-planet-id="${planet.id}">
+                        <i class="fas fa-star"></i>
+                    </button>
+                    <div class="planet-shape">
+                        <div class="realistic-planet ${planet.class}"></div>
+                        ${planet.name === 'Saturnus' ? '<div class="saturn-rings-realistic"></div>' : ''}
+                    </div>
+                    <h3 class="planet-name">${planet.name}</h3>
+                    <p class="planet-desc">${planet.description}</p>
+                    
+                    <div class="planet-stats">
+                        <div class="stat">
+                            <div class="stat-value">${planet.diameter}</div>
+                            <div class="stat-label">Diameter (km)</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">${planet.moons}</div>
+                            <div class="stat-label">Bulan</div>
+                        </div>
+                    </div>
+                    
+                    <button class="toggle-details">
+                        <i class="fas fa-chevron-down"></i> Detail
+                    </button>
+                    
+                    <div class="planet-details">
+                        <p><strong>Jarak dari Matahari:</strong> ${planet.distance}</p>
+                        <p><strong>Periode Orbit:</strong> ${planet.orbitalPeriod}</p>
+                        <p><strong>Periode Rotasi:</strong> ${planet.rotationPeriod}</p>
+                        <p><strong>Suhu Rata-rata:</strong> ${planet.temperature}</p>
+                    </div>
+                    
+                    <div class="planet-facts">
+                        <p>${planet.facts}</p>
+                    </div>
+                </div>
+            `).join('');
+            
+            // Tambahkan event listeners untuk card planet
+            document.querySelectorAll('.planet-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.classList.contains('favorite-btn') && 
+                        !e.target.classList.contains('toggle-details') &&
+                        !e.target.closest('.toggle-details')) {
+                        const planetId = parseInt(this.getAttribute('data-planet-id'));
+                        openPlanetModal(planetId);
+                    }
+                });
+            });
+            
+            // Event listeners untuk tombol favorit
+            document.querySelectorAll('.favorite-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const planetId = parseInt(this.getAttribute('data-planet-id'));
+                    toggleFavorite(planetId);
+                });
+            });
+            
+            // Event listeners untuk toggle detail
+            document.querySelectorAll('.toggle-details').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const card = this.closest('.planet-card');
+                    card.classList.toggle('active');
+                    
+                    const icon = this.querySelector('i');
+                    if (card.classList.contains('active')) {
+                        icon.className = 'fas fa-chevron-up';
+                        this.innerHTML = '<i class="fas fa-chevron-up"></i> Sembunyikan';
+                    } else {
+                        icon.className = 'fas fa-chevron-down';
+                        this.innerHTML = '<i class="fas fa-chevron-down"></i> Detail';
+                    }
+                });
+            });
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Filter buttons (kecuali tombol favorit dan game)
+            document.querySelectorAll('.filter-btn:not(#showFavorites):not(#showGame)').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Reset state favorit dan game
+                    isShowingFavorites = false;
+                    isShowingGame = false;
+                    document.getElementById('favoritesSection').classList.remove('active');
+                    document.getElementById('showFavorites').classList.remove('favorites-active');
+                    document.getElementById('showGame').classList.remove('game-active');
+                    
+                    // Update filter aktif
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    currentFilter = this.getAttribute('data-filter');
+                    renderPlanets();
+                });
+            });
+            
+            // Tombol favorit khusus
+            document.getElementById('showFavorites').addEventListener('click', function() {
+                isShowingFavorites = !isShowingFavorites;
+                isShowingGame = false;
+                document.getElementById('showGame').classList.remove('game-active');
+                
+                if (isShowingFavorites) {
+                    // Tampilkan favorit
+                    document.getElementById('favoritesSection').classList.add('active');
+                    this.classList.add('favorites-active');
+                    document.querySelectorAll('.filter-btn:not(#showFavorites):not(#showGame)').forEach(btn => btn.classList.remove('active'));
+                } else {
+                    // Kembali ke semua planet
+                    document.getElementById('favoritesSection').classList.remove('active');
+                    this.classList.remove('favorites-active');
+                    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+                    currentFilter = 'all';
+                }
+                
+                renderPlanets();
+                updateFavoritesSection();
+            });
+            
+            // Tombol game
+            document.getElementById('showGame').addEventListener('click', function() {
+                isShowingGame = !isShowingGame;
+                isShowingFavorites = false;
+                document.getElementById('favoritesSection').classList.remove('active');
+                document.getElementById('showFavorites').classList.remove('favorites-active');
+                
+                if (isShowingGame) {
+                    this.classList.add('game-active');
+                    document.querySelectorAll('.filter-btn:not(#showGame)').forEach(btn => btn.classList.remove('active'));
+                } else {
+                    this.classList.remove('game-active');
+                    document.querySelector('.filter-btn[data-filter="all"]').classList.add('active');
+                    currentFilter = 'all';
+                }
+                
+                renderPlanets();
+            });
+            
+            // Search input
+            document.getElementById('searchInput').addEventListener('input', function() {
+                currentSearch = this.value;
+                renderPlanets();
+            });
+            
+            // Modal close button
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            
+            // Close modal when clicking outside
+            document.getElementById('planetModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Event listeners untuk permainan
+            setupGameEventListeners();
+        }
+
+        // Setup event listeners untuk permainan
+        function setupGameEventListeners() {
+            document.getElementById('startGame').addEventListener('click', startGame);
+            document.getElementById('resetGame').addEventListener('click', resetGame);
+            document.getElementById('showHint').addEventListener('click', showHint);
+        }
+
+        // Fungsi permainan baru
+        function startGame() {
+            isGameActive = true;
+            gameScore = 0;
+            correctMatches = 0;
+            gameTime = 60;
+            selectedPlanet = null;
+            placedPlanets = [];
+            
+            document.getElementById('startGame').disabled = true;
+            document.getElementById('resetGame').disabled = false;
+            document.getElementById('gameMessage').className = 'game-message';
+            document.getElementById('gameMessage').textContent = '';
+            document.getElementById('timer').style.color = '#4facfe';
+            
+            updateGameStats();
+            setupSolarSystem();
+            setupPlanetSelection();
+            startTimer();
+        }
+
+        function resetGame() {
+            clearInterval(gameTimer);
+            isGameActive = false;
+            document.getElementById('startGame').disabled = false;
+            document.getElementById('resetGame').disabled = true;
+            document.getElementById('gameMessage').className = 'game-message';
+            document.getElementById('gameMessage').textContent = '';
+            
+            gameScore = 0;
+            correctMatches = 0;
+            gameTime = 60;
+            selectedPlanet = null;
+            placedPlanets = [];
+            updateGameStats();
+            setupSolarSystem();
+            setupPlanetSelection();
+        }
+
+        function setupSolarSystem() {
+            const solarSystem = document.getElementById('solarSystem');
+            solarSystem.innerHTML = '';
+            
+            // Tambahkan Matahari di atas orbit 1
+            solarSystem.innerHTML += '<div class="sun"></div>';
+            
+            // Container untuk orbit horizontal
+            const orbitContainer = document.createElement('div');
+            orbitContainer.className = 'orbit-container';
+            solarSystem.appendChild(orbitContainer);
+            
+            // Tambahkan 8 orbit horizontal
+            for (let i = 1; i <= 8; i++) {
+                const orbit = document.createElement('div');
+                orbit.className = 'orbit';
+                orbit.innerHTML = `<div class="orbit-number">${i}</div>`;
+                orbitContainer.appendChild(orbit);
+                
+                // Buat slot untuk planet di tengah orbit
+                const slot = document.createElement('div');
+                slot.className = 'planet-slot';
+                slot.setAttribute('data-order', i);
+                slot.innerHTML = `?`;
+                orbit.appendChild(slot);
+                
+                // Event listener untuk klik orbit
+                slot.addEventListener('click', function() {
+                    if (!isGameActive || !selectedPlanet) return;
+                    
+                    const targetSlotOrder = parseInt(this.getAttribute('data-order'));
+                    const planet = selectedPlanet;
+                    
+                    placePlanet(planet, targetSlotOrder, this);
+                });
+            }
+        }
+
+        function setupPlanetSelection() {
+            const planetSelection = document.getElementById('planetSelection');
+            planetSelection.innerHTML = '';
+            
+            // Acak urutan planet untuk tantangan
+            const shuffledPlanets = [...planets].sort(() => Math.random() - 0.5);
+            
+            shuffledPlanets.forEach(planet => {
+                // Buat container untuk setiap planet dan labelnya
+                const planetContainer = document.createElement('div');
+                planetContainer.className = 'planet-container';
+                
+                const selectablePlanet = document.createElement('div');
+                selectablePlanet.className = 'selectable-planet';
+                selectablePlanet.setAttribute('data-planet-id', planet.id);
+                
+                selectablePlanet.innerHTML = `
+                    <div class="realistic-planet ${planet.class}"></div>
+                    ${planet.name === 'Saturnus' ? '<div class="saturn-rings-realistic"></div>' : ''}
+                `;
+                
+                // Buat label nama planet terpisah
+                const planetLabel = document.createElement('div');
+                planetLabel.className = 'planet-name-tag';
+                planetLabel.textContent = planet.name;
+                
+                // Event listener untuk memilih planet
+                selectablePlanet.addEventListener('click', function() {
+                    if (!isGameActive) return;
+                    
+                    // Reset seleksi sebelumnya
+                    document.querySelectorAll('.selectable-planet').forEach(p => {
+                        p.classList.remove('selected');
+                    });
+                    
+                    // Pilih planet ini
+                    this.classList.add('selected');
+                    selectedPlanet = planet;
+                });
+                
+                // Tambahkan ke container
+                planetContainer.appendChild(selectablePlanet);
+                planetContainer.appendChild(planetLabel);
+                planetSelection.appendChild(planetContainer);
+            });
+        }
+
+        function placePlanet(planet, targetSlotOrder, slotElement) {
+            // Cek jika planet sudah ditempatkan
+            if (placedPlanets.includes(planet.id)) {
+                showGameMessage('Planet ini sudah ditempatkan!', 'error');
+                return;
+            }
+            
+            // Cek jika posisi benar
+            if (planet.order === targetSlotOrder) {
+                // Posisi benar - beri poin
+                slotElement.classList.add('correct');
+                slotElement.innerHTML = `
+                    <div style="width: 45px; height: 45px; border-radius: 50%; position: relative; overflow: hidden;">
+                        <div class="realistic-planet ${planet.class}"></div>
+                        ${planet.name === 'Saturnus' ? '<div class="saturn-rings-realistic"></div>' : ''}
+                    </div>
+                `;
+                
+                // Tandai planet sebagai sudah ditempatkan
+                const planetElement = document.querySelector(`.selectable-planet[data-planet-id="${planet.id}"]`);
+                planetElement.classList.add('placed');
+                planetElement.classList.remove('selected');
+                
+                // Hitung skor dengan total 100 jika semua benar
+                gameScore = Math.round((correctMatches + 1) / planets.length * 100);
+                correctMatches++;
+                
+                placedPlanets.push(planet.id);
+                selectedPlanet = null;
+                updateGameStats();
+                
+                // Cek jika semua planet sudah ditempatkan
+                if (correctMatches === planets.length) {
+                    endGame(true);
+                }
+                
+                showGameMessage(`Benar! ${planet.name} di orbit ${targetSlotOrder}`, 'success');
+            } else {
+                // Posisi salah - kurangi poin
+                slotElement.classList.add('incorrect');
+                
+                setTimeout(() => {
+                    slotElement.classList.remove('incorrect');
+                }, 1000);
+                
+                // Kurangi skor secara proporsional
+                gameScore = Math.max(0, gameScore - Math.round(100 / planets.length));
+                updateGameStats();
+                showGameMessage(`Salah! ${planet.name} bukan di orbit ${targetSlotOrder}`, 'error');
+            }
+        }
+
+        function startTimer() {
+            gameTimer = setInterval(() => {
+                gameTime--;
+                document.getElementById('timer').textContent = gameTime;
+                
+                if (gameTime <= 0) {
+                    endGame(false);
+                }
+                
+                // Warna peringatan saat waktu hampir habis
+                if (gameTime <= 10) {
+                    document.getElementById('timer').style.color = '#ff4444';
+                }
+            }, 1000);
+        }
+
+        function endGame(isWin) {
+            clearInterval(gameTimer);
+            isGameActive = false;
+            
+            if (isWin) {
+                // Skor maksimal 100 jika semua benar
+                gameScore = 100;
+                updateGameStats();
+                showGameMessage(`<div class="final-score">Selamat! Skor Akhir: ${gameScore}</div>`, 'success');
+            } else {
+                showGameMessage(`<div class="final-score">Waktu habis! Skor Akhir: ${gameScore}</div>`, 'error');
+            }
+            
+            document.getElementById('startGame').disabled = false;
+            document.getElementById('resetGame').disabled = true;
+        }
+
+        function updateGameStats() {
+            document.getElementById('score').textContent = gameScore;
+            document.getElementById('timer').textContent = gameTime;
+            document.getElementById('correctMatches').textContent = `${correctMatches}/${planets.length}`;
+        }
+
+        function showGameMessage(message, type) {
+            const messageElement = document.getElementById('gameMessage');
+            messageElement.innerHTML = message;
+            messageElement.className = `game-message ${type}`;
+            
+            setTimeout(() => {
+                messageElement.className = 'game-message';
+            }, 4000);
+        }
+
+        function showHint() {
+            const hints = [
+                "Merkurius adalah planet terdekat dengan Matahari",
+                "Venus adalah planet terpanas di tata surya",
+                "Bumi adalah satu-satunya planet yang memiliki kehidupan",
+                "Mars disebut planet merah karena warna permukaannya",
+                "Jupiter adalah planet terbesar di tata surya",
+                "Saturnus terkenal dengan cincinnya yang indah",
+                "Uranus berotasi dengan sumbu yang sangat miring",
+                "Neptunus memiliki angin terkuat di tata surya"
+            ];
+            
+            const randomHint = hints[Math.floor(Math.random() * hints.length)];
+            showGameMessage(`Petunjuk: ${randomHint}`, 'success');
+        }
+
+        // Toggle favorit
+        function toggleFavorite(planetId) {
+            const index = favorites.indexOf(planetId);
+            
+            if (index === -1) {
+                favorites.push(planetId);
+                showNotification('Planet telah ditambahkan ke favorit!');
+            } else {
+                favorites.splice(index, 1);
+                showNotification('Planet telah dihapus dari favorit!');
+            }
+            
+            // Simpan ke localStorage
+            localStorage.setItem('planetFavorites', JSON.stringify(favorites));
+            
+            // Perbarui tampilan
+            renderPlanets();
+            updateFavoritesSection();
+        }
+
+        // Update bagian favorit
+        function updateFavoritesSection() {
+            const favoritesList = document.getElementById('favoritesList');
+            
+            if (favorites.length === 0) {
+                favoritesList.innerHTML = '<p style="text-align:center; width:100%; color:#a0a0e0;">Belum ada planet favorit</p>';
+                return;
+            }
+            
+            const favoritePlanets = planets.filter(planet => favorites.includes(planet.id));
+            
+            favoritesList.innerHTML = favoritePlanets.map(planet => `
+                <div class="favorite-item" data-planet-id="${planet.id}">
+                    <i class="fas fa-star" style="color: #ffd700;"></i>
+                    ${planet.name}
+                </div>
+            `).join('');
+            
+            // Event listener untuk item favorit
+            document.querySelectorAll('.favorite-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const planetId = parseInt(this.getAttribute('data-planet-id'));
+                    openPlanetModal(planetId);
+                });
+            });
+        }
+
+        // Tampilkan notifikasi
+        function showNotification(message) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Buka modal detail planet
+        function openPlanetModal(planetId) {
+            const planet = planets.find(p => p.id === planetId);
+            if (!planet) return;
+            
+            document.getElementById('modalPlanetName').textContent = planet.name;
+            
+            const modalImage = document.getElementById('modalPlanetImage');
+            modalImage.innerHTML = `
+                <div class="realistic-planet ${planet.class}" style="width: 100%; height: 100%;"></div>
+                ${planet.name === 'Saturnus' ? '<div class="saturn-rings-realistic"></div>' : ''}
+            `;
+            
+            const modalDetails = document.getElementById('modalPlanetDetails');
+            modalDetails.innerHTML = `
+                <p><strong>Deskripsi:</strong> ${planet.description}</p>
+                <p><strong>Jenis Planet:</strong> ${getPlanetTypeName(planet.type)}</p>
+                <p><strong>Diameter:</strong> ${planet.diameter} km</p>
+                <p><strong>Massa:</strong> ${planet.mass}</p>
+                <p><strong>Jarak dari Matahari:</strong> ${planet.distance}</p>
+                <p><strong>Periode Orbit:</strong> ${planet.orbitalPeriod}</p>
+                <p><strong>Periode Rotasi:</strong> ${planet.rotationPeriod}</p>
+                <p><strong>Suhu Rata-rata:</strong> ${planet.temperature}</p>
+                <p><strong>Jumlah Bulan:</strong> ${planet.moons}</p>
+                <p><strong>Ditemukan:</strong> ${planet.discovery}</p>
+                <p><strong>Fakta Menarik:</strong> ${planet.facts}</p>
+            `;
+            
+            document.getElementById('planetModal').style.display = 'flex';
+        }
+
+        // Tutup modal
+        function closeModal() {
+            document.getElementById('planetModal').style.display = 'none';
+        }
+
+        // Dapatkan nama jenis planet
+        function getPlanetTypeName(type) {
+            const typeNames = {
+                'rocky': 'Planet Batuan',
+                'gas': 'Planet Gas',
+                'ice': 'Planet Es'
+            };
+            return typeNames[type] || type;
+        }
+
+        // Render chart perbandingan
+        function renderComparisonChart() {
+            const chart = document.getElementById('comparisonChart');
+            const maxDiameter = Math.max(...planets.map(p => p.diameter));
+            
+            chart.innerHTML = planets.map(planet => {
+                const height = (planet.diameter / maxDiameter) * 150;
+                return `
+                    <div class="comparison-bar" style="height: ${height}px">
+                        <div class="comparison-bar-value">${planet.diameter}</div>
+                        <div class="comparison-bar-label">${planet.name}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
+[file content end]
